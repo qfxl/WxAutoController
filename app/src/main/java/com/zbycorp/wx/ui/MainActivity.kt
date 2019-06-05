@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.provider.Settings.SettingNotFoundException
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 context.contentResolver,
                 Settings.Secure.ACCESSIBILITY_ENABLED
             )
-        } catch (e: Settings.SettingNotFoundException) {
+        } catch (e: SettingNotFoundException) {
             Log.i("URL", "错误信息为：" + e.message)
         }
 
