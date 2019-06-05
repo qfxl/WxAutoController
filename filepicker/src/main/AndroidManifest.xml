@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zbycorp.filepicker">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application>
+
+        <activity
+            android:name=".ui.FilePickerActivity"
+            android:theme="@style/BaseTheme" />
+    </application>
+</manifest>
