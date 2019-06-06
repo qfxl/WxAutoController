@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import java.util.*
+import kotlin.collections.ArrayList
 
 internal object WeChatAccessUtil {
     private val TAG = "qfxl"
@@ -58,9 +60,19 @@ internal object WeChatAccessUtil {
      * 聊天界面发送按钮
      */
     private val SEND_ID = BASELAYOUT_ID + "amp"
+    /**
+     * 聊天界面退出按钮
+     */
+    private val CHAT_SEND_BACK_ID = BASELAYOUT_ID + "kn"
+    /**
+     * 搜索界面退出按钮
+     */
+    private val SEARCH_SEND_BACK_ID = BASELAYOUT_ID + "l1"
 
-    var name: String? = null
-    var content: String? = null
+    /**
+     * 名字及内容
+     */
+    var nameContentList: ArrayList<Pair<String, String>>? = null
     /**
      * 打开微信
      *
@@ -83,7 +95,7 @@ internal object WeChatAccessUtil {
      * @param name
      */
     @Throws(InterruptedException::class)
-    fun search(service: AccessibilityService) {
+    fun sendMessage(service: AccessibilityService) {
         val viewList = findNodesByViewId(
             service,
             SEARCH_ID
@@ -94,30 +106,35 @@ internal object WeChatAccessUtil {
                 val nodeInfo = accessibilityNodeInfo.parent
                 if (TextUtils.isEmpty(nodeInfo.contentDescription)) {
                     nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     fillInput(
                         service,
                         SEARCH_INPUT_ID,
-                        name
+                        nameContentList?.get(0)?.first
                     )
-                    Thread.sleep(1000)
-                    findViewAndPerformClickParentByText(service, name)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
+                    findViewAndPerformClickParentByText(service, nameContentList?.get(0)?.first)
+                    Thread.sleep(500)
                     findViewIdAndPerformClick(
                         service,
                         CHAT_INPUT_ID
                     )
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     fillInput(
                         service,
                         CHAT_INPUT_ID,
-                        content
+                        nameContentList?.get(0)?.second
                     )
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     findViewIdAndPerformClick(
                         service,
                         SEND_ID
                     )
+                    findViewAndPerformClickParent(service, CHAT_SEND_BACK_ID)
+                    Thread.sleep(500)
+                    findViewAndPerformClickParent(service, SEARCH_SEND_BACK_ID)
+
+                    nameContentList?.removeAt(0)
                     break
                 }
             }
@@ -174,13 +191,10 @@ internal object WeChatAccessUtil {
     private fun findViewAndPerformClickParent(service: AccessibilityService, viewId: String) {
         val viewList = findNodesByViewId(service, viewId)
         if (viewList != null && viewList.isNotEmpty()) {
-            Log.i(TAG, "viewListSize = " + viewList.size)
-            Log.i(TAG, "viewList = $viewList")
             for (i in viewList.indices) {
                 //微信7.0.4版本特殊处理
                 val nodeInfo = viewList[i].parent
                 nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                Log.i(TAG, "clickParent")
             }
         }
     }

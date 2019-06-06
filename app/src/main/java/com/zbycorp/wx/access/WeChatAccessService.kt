@@ -15,7 +15,9 @@ class WeChatAccessService : AccessibilityService() {
                 when (event.className.toString()) {
                     WeChatAccessUtil.WECHAT_CLASS_LAUNCHUI -> {
                         try {
-                            WeChatAccessUtil.search(this@WeChatAccessService)
+                            if (WeChatAccessUtil.nameContentList != null && WeChatAccessUtil.nameContentList!!.isNotEmpty()) {
+                                WeChatAccessUtil.sendMessage(this@WeChatAccessService)
+                            }
                         } catch (e: InterruptedException) {
                             e.printStackTrace()
                         }

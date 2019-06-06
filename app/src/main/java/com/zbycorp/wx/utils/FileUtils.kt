@@ -20,8 +20,8 @@ object FileUtils {
             val rowCount = sheet.physicalNumberOfRows
             var colCount: Int
             val formulaEvaluator = workbook.creationHelper.createFormulaEvaluator()
-
-            for (r in 0 until rowCount) {
+            //0是sheet 头，不取
+            for (r in 1 until rowCount) {
                 val row = sheet.getRow(r)
                 colCount = row.physicalNumberOfCells
                 val name = getCellAsString(row, 0, formulaEvaluator)

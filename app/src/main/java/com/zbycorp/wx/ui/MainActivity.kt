@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
@@ -17,6 +18,7 @@ import com.zbycorp.filepicker.ui.FilePickerActivity
 import com.zbycorp.wx.R
 import com.zbycorp.wx.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.StringBuilder
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
@@ -44,12 +46,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 importExcel()
             }
+
         }
 
         btn_send.setOnClickListener {
             if (isAccessibilitySettingsOn(this@MainActivity)) {
-                WeChatAccessUtil.name = et_name.text.toString()
-                WeChatAccessUtil.content = et_content.text.toString()
                 WeChatAccessUtil.openWeChat(this)
             } else {
                 AlertDialog.Builder(this@MainActivity)
@@ -91,10 +92,22 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == fileRequestCode && resultCode == Activity.RESULT_OK) {
             val path = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
             if (!path.isEmpty()) {
+                pb_main.visibility = View.VISIBLE
                 async {
                     val datas = FileUtils.parseExcel(path!!)
-                    et_name.setText(datas[1].first)
-                    et_content.setText(datas[1].second)
+                    sync {
+                        pb_main.visibility = View.GONE
+                    }
+
+                    val sb = StringBuilder()
+                    datas.forEach {
+                        sb.append(it.first)
+                            .append("：")
+                            .append(it.second)
+                            .append("\n")
+                    }
+                    tv_content.text = sb.toString()
+                    WeChatAccessUtil.nameContentList = datas
                 }
             }
         }
