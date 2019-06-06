@@ -15,7 +15,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 internal object WeChatAccessUtil {
-    private val TAG = "qfxl"
     /**
      * 微信包名
      */
